@@ -6,10 +6,12 @@ import { SectionLabel } from './components/SectionLabel'
 import { FootballScene } from './scene/FootballScene'
 import { profile } from './data/profile'
 import { useSmoothScroll } from './hooks/useSmoothScroll'
+import { usePortfolioMotion } from './hooks/usePortfolioMotion'
 
 function App() {
   const [introDone, setIntroDone] = useState(false)
   useSmoothScroll(introDone)
+  usePortfolioMotion(introDone)
 
   useEffect(() => {
     document.body.classList.toggle('intro-active', !introDone)
@@ -82,6 +84,7 @@ function App() {
         </section>
 
         <section className="experience section" id="experience">
+          <div className="trophy-caption trophy-caption--ucl">Champions League night</div>
           <div className="section__inner grid-two">
             <div>
               <SectionLabel number="03">Match experience</SectionLabel>
@@ -101,6 +104,7 @@ function App() {
         </section>
 
         <section className="projects section" id="projects">
+          <div className="trophy-caption trophy-caption--world">World-class build standard</div>
           <div className="section__inner">
             <SectionLabel number="04">Selected highlights</SectionLabel>
             <div className="projects__heading">
