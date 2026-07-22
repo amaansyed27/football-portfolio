@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ArrowDown, ArrowUpRight, Code2, Database, MapPin } from 'lucide-react'
+import { HeroNumberTen } from './components/HeroNumberTen'
 import { IntroSequence } from './components/IntroSequence'
 import { Navigation } from './components/Navigation'
 import { SectionLabel } from './components/SectionLabel'
@@ -28,6 +29,7 @@ function App() {
       <main>
         <section className="hero" id="home">
           <div className="hero__stadium" />
+          <HeroNumberTen />
           <div className="hero__content">
             <p className="hero__kicker"><span>10</span> Full-stack developer · Delhi, India</p>
             <h1><span>DIVYANSHU</span><strong>MITTAL</strong></h1>
