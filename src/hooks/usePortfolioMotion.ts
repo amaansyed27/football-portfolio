@@ -47,6 +47,7 @@ export function usePortfolioMotion(enabled: boolean) {
       })
 
       gsap.utils.toArray<HTMLElement>('.section').forEach((section) => {
+        if (section.id === 'contact') return
         const headingPieces = section.querySelectorAll('.section-label, h2')
         if (headingPieces.length) {
           gsap.fromTo(
@@ -160,67 +161,83 @@ export function usePortfolioMotion(enabled: boolean) {
       )
 
       gsap.fromTo(
-        '.contact__overline, .contact h2, .contact .button, .contact footer',
-        { opacity: 0, y: 80 },
+        '.finale__top > *, .finale__play',
+        { opacity: 0, y: 90 },
         {
           opacity: 1,
           y: 0,
-          stagger: 0.14,
+          stagger: 0.12,
           ease: 'none',
-          scrollTrigger: { trigger: '.contact', start: 'top 68%', end: 'center 48%', scrub: 1 },
+          scrollTrigger: { trigger: '.contact', start: 'top 88%', end: 'top 34%', scrub: 1 },
         },
       )
 
       gsap.fromTo(
-        '.contact__shot-cue',
-        { opacity: 0, x: 70 },
+        '.finale__goal',
+        { opacity: 0, x: 90, scale: 0.86 },
+        {
+          opacity: 1,
+          x: 0,
+          scale: 1,
+          ease: 'none',
+          scrollTrigger: { trigger: '.contact', start: '24% center', end: '46% center', scrub: 1 },
+        },
+      )
+
+      gsap.fromTo(
+        '.finale__launch',
+        { opacity: 0, x: -60 },
         {
           opacity: 1,
           x: 0,
           ease: 'none',
-          scrollTrigger: { trigger: '.contact', start: 'top 92%', end: 'top 58%', scrub: 1 },
+          scrollTrigger: { trigger: '.contact', start: '26% center', end: '52% center', scrub: 1 },
         },
       )
 
-      gsap.to('.contact__shot-cue', {
-        opacity: 0,
-        x: -45,
-        scale: 0.92,
-        ease: 'none',
-        scrollTrigger: { trigger: '.contact', start: '34% center', end: '48% center', scrub: 1 },
-      })
+      gsap.set('.finale__impact span', { opacity: 0, scale: 0.25 })
+      gsap.set('.finale__goal-word', { opacity: 0, scale: 0.62, clipPath: 'inset(0 46% 0 46%)' })
 
-      gsap.fromTo(
-        '.goal-callout__panel',
-        { opacity: 0, scale: 0.52, rotate: -5, clipPath: 'inset(0 48% 0 48%)' },
-        {
-          opacity: 1,
-          scale: 1,
-          rotate: 0,
-          clipPath: 'inset(0 0% 0 0%)',
-          ease: 'power3.out',
-          scrollTrigger: { trigger: '.contact', start: '48% center', end: '66% center', scrub: 0.8 },
-        },
-      )
-
-      gsap.to('.goal-callout__panel', {
-        opacity: 0.12,
-        yPercent: -20,
-        ease: 'none',
-        scrollTrigger: { trigger: '.contact', start: '68% center', end: 'bottom top', scrub: 1 },
-      })
-
-      const finaleFlash = gsap.timeline({
+      const shotTimeline = gsap.timeline({
         scrollTrigger: {
           trigger: '.contact',
-          start: '49% center',
-          end: '69% center',
-          scrub: 0.8,
+          start: '62% center',
+          end: '93% center',
+          scrub: 0.85,
         },
       })
-      finaleFlash
-        .to('.contact__lights', { opacity: 1, filter: 'brightness(2.1) saturate(1.35)', duration: 0.22 })
-        .to('.contact__lights', { opacity: 0.5, filter: 'brightness(1) saturate(1)', duration: 0.78 })
+
+      shotTimeline
+        .to('.finale__launch', { opacity: 0, x: -45, duration: 0.16 }, 0)
+        .to('.finale__goal', { x: -9, rotate: -1.3, duration: 0.04 }, 0.56)
+        .to('.finale__goal', { x: 7, rotate: 1, duration: 0.04 }, 0.6)
+        .to('.finale__goal', { x: 0, rotate: 0, duration: 0.08 }, 0.64)
+        .to(
+          '.finale__impact span',
+          { opacity: 0.9, scale: 1.6, stagger: 0.035, duration: 0.13, ease: 'power2.out' },
+          0.56,
+        )
+        .to('.finale__impact span', { opacity: 0, scale: 3.2, stagger: 0.025, duration: 0.22 }, 0.69)
+        .to(
+          '.finale__goal-word',
+          { opacity: 1, scale: 1, clipPath: 'inset(0 0% 0 0%)', duration: 0.22, ease: 'power3.out' },
+          0.62,
+        )
+        .to('.finale__goal-word', { opacity: 0.16, yPercent: -18, duration: 0.28 }, 0.82)
+        .to('.finale__wash', { opacity: 1, filter: 'brightness(1.9) saturate(1.35)', duration: 0.08 }, 0.56)
+        .to('.finale__wash', { opacity: 0.54, filter: 'brightness(1) saturate(1)', duration: 0.24 }, 0.66)
+
+      gsap.fromTo(
+        '.finale__cta-row, .finale__footer',
+        { opacity: 0, y: 58 },
+        {
+          opacity: 1,
+          y: 0,
+          stagger: 0.12,
+          ease: 'none',
+          scrollTrigger: { trigger: '.contact', start: '80% center', end: 'bottom bottom', scrub: 1 },
+        },
+      )
 
       gsap.to('.marquee span', {
         xPercent: -28,
