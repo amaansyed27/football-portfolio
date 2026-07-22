@@ -1,0 +1,463 @@
+/* Interaction rebuild: the 3D layer sits between each section background and its copy. */
+.scene {
+  z-index: 6;
+  filter: saturate(1.12) contrast(1.05);
+}
+
+main {
+  z-index: auto;
+}
+
+.section,
+.hero {
+  min-height: 122vh;
+}
+
+.section__inner,
+.hero__content,
+.hero__score,
+.hero__scroll,
+.contact__content {
+  z-index: 9;
+}
+
+.hero {
+  min-height: 112vh;
+}
+
+.formation {
+  min-height: 142vh;
+}
+
+.projects {
+  min-height: 178vh;
+}
+
+.contact {
+  min-height: 152vh;
+}
+
+.section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(110deg, rgba(5, 12, 26, .76), transparent 48%, rgba(5, 12, 26, .35));
+}
+
+.section__inner,
+.hero__content,
+.contact__content {
+  position: relative;
+}
+
+/* Matchday navigation */
+.nav {
+  top: 18px;
+  left: 22px;
+  right: 22px;
+  height: 76px;
+  padding: 0;
+  align-items: stretch;
+  border: 0;
+  background: transparent;
+}
+
+.nav--scrolled {
+  height: 68px;
+  border: 0;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.nav__shell {
+  position: relative;
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(220px, .72fr) minmax(470px, 1.55fr) minmax(180px, .58fr);
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(247, 241, 223, .18);
+  background: rgba(3, 8, 18, .78);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, .28);
+  backdrop-filter: blur(22px) saturate(1.15);
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+  transition: background .35s, transform .35s, border-color .35s;
+}
+
+.nav--scrolled .nav__shell {
+  background: rgba(3, 8, 18, .94);
+  border-color: rgba(237, 187, 0, .28);
+  transform: translateY(-2px);
+}
+
+.nav__shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, rgba(0, 77, 152, .18), transparent 33%, transparent 68%, rgba(165, 0, 68, .16));
+}
+
+.nav__mark {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  padding: 0 1.25rem;
+  gap: .85rem;
+  border-right: 1px solid rgba(247, 241, 223, .12);
+}
+
+.nav__crest-frame {
+  width: 42px;
+  height: 50px;
+  display: grid;
+  place-items: center;
+  border-right: 2px solid var(--gold);
+  padding-right: .65rem;
+}
+
+.nav__mark img {
+  width: 30px;
+  height: 38px;
+}
+
+.nav__wordmark {
+  display: flex;
+  flex-direction: column;
+  gap: .15rem;
+}
+
+.nav__wordmark strong {
+  font: 800 1.03rem/1 var(--display);
+  letter-spacing: .045em;
+}
+
+.nav__wordmark small {
+  color: #858b98;
+  font-size: .48rem;
+  letter-spacing: .15em;
+}
+
+.nav__number {
+  margin-left: auto;
+  color: rgba(247, 241, 223, .12);
+  font: 900 2.7rem/.8 var(--display);
+  letter-spacing: -.06em;
+}
+
+.nav__links {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0;
+  font-size: .59rem;
+  letter-spacing: .11em;
+}
+
+.nav__links a {
+  min-width: 0;
+  height: 100%;
+  padding: 0 .6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  border-right: 1px solid rgba(247, 241, 223, .08);
+  color: #9da2ad;
+  transition: color .25s, background .25s;
+}
+
+.nav__links a span {
+  color: rgba(237, 187, 0, .5);
+  font-size: .46rem;
+}
+
+.nav__links a::after {
+  left: 22%;
+  right: 78%;
+  bottom: 0;
+  height: 3px;
+  transition: left .25s, right .25s;
+}
+
+.nav__links a:hover,
+.nav__links a.is-active {
+  color: var(--cream);
+  background: rgba(247, 241, 223, .035);
+}
+
+.nav__links a:hover::after,
+.nav__links a.is-active::after {
+  left: 0;
+  right: 0;
+}
+
+.nav__cta {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 1.2rem;
+  color: #071328;
+  background: var(--gold);
+  font: 700 .62rem var(--display);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  transition: background .25s;
+}
+
+.nav__cta:hover {
+  background: #ffd525;
+}
+
+.nav__cta svg {
+  width: 17px;
+}
+
+.nav__progress {
+  position: absolute;
+  z-index: 4;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: rgba(247, 241, 223, .08);
+  transform-origin: left;
+}
+
+.nav__progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue), var(--gold), var(--garnet));
+  transform-origin: left;
+}
+
+.nav__toggle {
+  position: relative;
+  z-index: 5;
+}
+
+/* Give the 3D story clear visual zones. */
+.hero::after {
+  content: 'AL RIHALA / SCROLL CONTROL';
+  position: absolute;
+  z-index: 9;
+  right: 7vw;
+  bottom: 8rem;
+  color: rgba(247, 241, 223, .38);
+  font-size: .52rem;
+  letter-spacing: .18em;
+  writing-mode: vertical-rl;
+}
+
+.experience::before,
+.projects::before {
+  position: absolute;
+  z-index: 2;
+  color: rgba(247, 241, 223, .028);
+  font: 900 clamp(11rem, 26vw, 28rem)/.75 var(--display);
+  letter-spacing: -.08em;
+  pointer-events: none;
+}
+
+.experience::before {
+  content: 'UCL';
+  right: -2vw;
+  bottom: 2%;
+}
+
+.projects::before {
+  content: 'WC';
+  left: -1vw;
+  top: 18%;
+}
+
+.trophy-caption {
+  position: absolute;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  color: rgba(247, 241, 223, .62);
+  font-size: .55rem;
+  letter-spacing: .17em;
+  text-transform: uppercase;
+}
+
+.trophy-caption::before {
+  content: '';
+  width: 54px;
+  height: 1px;
+  background: var(--gold);
+}
+
+.trophy-caption--ucl {
+  right: 6vw;
+  bottom: 10%;
+}
+
+.trophy-caption--world {
+  left: 5vw;
+  top: 36%;
+}
+
+.pitch {
+  box-shadow: 0 50px 110px rgba(0, 0, 0, .32), inset 0 0 70px rgba(0, 77, 152, .08);
+  transform-origin: center top;
+}
+
+.experience__card,
+.project,
+.profile__facts {
+  position: relative;
+  z-index: 10;
+}
+
+.experience__card {
+  background: rgba(3, 8, 18, .68);
+  box-shadow: 0 30px 100px rgba(0, 0, 0, .28);
+}
+
+.project-list {
+  position: relative;
+  z-index: 10;
+}
+
+.contact::after {
+  background: radial-gradient(circle at 50% 72%, transparent 0 25%, rgba(5, 12, 26, .38) 58%, rgba(5, 12, 26, .82));
+}
+
+@media (max-width: 1040px) {
+  .nav__shell {
+    grid-template-columns: minmax(190px, .7fr) 1.6fr 150px;
+  }
+
+  .nav__number,
+  .nav__links a span {
+    display: none;
+  }
+
+  .nav__links {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .scene {
+    filter: saturate(1.08);
+  }
+
+  .section,
+  .hero {
+    min-height: 116vh;
+  }
+
+  .projects {
+    min-height: 168vh;
+  }
+
+  .nav {
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    height: 66px;
+    padding: 0;
+  }
+
+  .nav__shell {
+    display: flex;
+    justify-content: space-between;
+    overflow: visible;
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  }
+
+  .nav__mark {
+    min-width: 0;
+    padding: 0 .9rem;
+    border-right: 0;
+  }
+
+  .nav__crest-frame {
+    width: 34px;
+    height: 42px;
+  }
+
+  .nav__mark img {
+    width: 25px;
+    height: 32px;
+  }
+
+  .nav__wordmark strong {
+    font-size: .9rem;
+  }
+
+  .nav__wordmark small {
+    font-size: .42rem;
+  }
+
+  .nav__cta {
+    display: none;
+  }
+
+  .nav__toggle {
+    display: grid;
+    place-items: center;
+    width: 62px;
+    height: 100%;
+    border-left: 1px solid rgba(247, 241, 223, .13);
+  }
+
+  .nav__links {
+    position: fixed;
+    inset: -10px;
+    z-index: 3;
+    height: calc(100vh + 20px);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0;
+    padding: 7rem 2rem 3rem;
+    background: linear-gradient(135deg, rgba(0, 77, 152, .28), transparent 40%), #030812;
+    transform: translateY(-110%);
+  }
+
+  .nav__links--open {
+    transform: none;
+  }
+
+  .nav__links a {
+    height: auto;
+    min-height: 74px;
+    justify-content: flex-start;
+    padding: 0 1rem;
+    border-right: 0;
+    border-bottom: 1px solid rgba(247, 241, 223, .12);
+    font: 800 2rem var(--display);
+    letter-spacing: -.01em;
+  }
+
+  .nav__links a span {
+    display: inline;
+    width: 2rem;
+    font: 500 .62rem 'DM Mono', monospace;
+  }
+
+  .nav__links a::after {
+    left: 0;
+    right: 100%;
+  }
+
+  .hero::after,
+  .trophy-caption {
+    display: none;
+  }
+}
