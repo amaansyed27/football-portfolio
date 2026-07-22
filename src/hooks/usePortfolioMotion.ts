@@ -171,6 +171,57 @@ export function usePortfolioMotion(enabled: boolean) {
         },
       )
 
+      gsap.fromTo(
+        '.contact__shot-cue',
+        { opacity: 0, x: 70 },
+        {
+          opacity: 1,
+          x: 0,
+          ease: 'none',
+          scrollTrigger: { trigger: '.contact', start: 'top 92%', end: 'top 58%', scrub: 1 },
+        },
+      )
+
+      gsap.to('.contact__shot-cue', {
+        opacity: 0,
+        x: -45,
+        scale: 0.92,
+        ease: 'none',
+        scrollTrigger: { trigger: '.contact', start: '34% center', end: '48% center', scrub: 1 },
+      })
+
+      gsap.fromTo(
+        '.goal-callout__panel',
+        { opacity: 0, scale: 0.52, rotate: -5, clipPath: 'inset(0 48% 0 48%)' },
+        {
+          opacity: 1,
+          scale: 1,
+          rotate: 0,
+          clipPath: 'inset(0 0% 0 0%)',
+          ease: 'power3.out',
+          scrollTrigger: { trigger: '.contact', start: '48% center', end: '66% center', scrub: 0.8 },
+        },
+      )
+
+      gsap.to('.goal-callout__panel', {
+        opacity: 0.12,
+        yPercent: -20,
+        ease: 'none',
+        scrollTrigger: { trigger: '.contact', start: '68% center', end: 'bottom top', scrub: 1 },
+      })
+
+      const finaleFlash = gsap.timeline({
+        scrollTrigger: {
+          trigger: '.contact',
+          start: '49% center',
+          end: '69% center',
+          scrub: 0.8,
+        },
+      })
+      finaleFlash
+        .to('.contact__lights', { opacity: 1, filter: 'brightness(2.1) saturate(1.35)', duration: 0.22 })
+        .to('.contact__lights', { opacity: 0.5, filter: 'brightness(1) saturate(1)', duration: 0.78 })
+
       gsap.to('.marquee span', {
         xPercent: -28,
         ease: 'none',
