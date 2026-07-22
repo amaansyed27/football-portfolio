@@ -142,6 +142,18 @@ function App() {
 
         <section className="contact section" id="contact">
           <div className="contact__lights" />
+          <div className="contact__shot-cue" aria-hidden="true">
+            <span>FINAL ATTACK</span>
+            <strong>Scroll to take the shot</strong>
+            <i />
+          </div>
+          <div className="goal-callout" aria-hidden="true">
+            <div className="goal-callout__panel">
+              <span>90+4&apos;</span>
+              <strong>GOOOAL!</strong>
+              <small>Top bins · Final whistle</small>
+            </div>
+          </div>
           <div className="section__inner contact__content">
             <SectionLabel number="90+">Final attack</SectionLabel>
             <p className="contact__overline">THE NET IS OPEN</p>

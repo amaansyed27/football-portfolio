@@ -10,19 +10,22 @@ const smooth = (a: number, b: number, value: number) => {
   return t * t * (3 - 2 * t)
 }
 
+const shotCurve = new THREE.CatmullRomCurve3(
+  [
+    new THREE.Vector3(1.82, -1.2, 0.18),
+    new THREE.Vector3(1.52, -0.58, -1.05),
+    new THREE.Vector3(0.92, 0.16, -2.45),
+    new THREE.Vector3(0.24, 0.02, -3.95),
+    new THREE.Vector3(0, -0.48, -5.02),
+  ],
+  false,
+  'catmullrom',
+  0.42,
+)
+
 function documentProgress() {
   const max = document.documentElement.scrollHeight - window.innerHeight
   return max > 0 ? clamp(window.scrollY / max, 0, 1) : 0
-}
-
-function sectionVisibility(id: string) {
-  const section = document.getElementById(id)
-  if (!section) return 0
-  const rect = section.getBoundingClientRect()
-  const viewport = window.innerHeight
-  const center = rect.top + rect.height / 2
-  const distance = Math.abs(center - viewport / 2)
-  return clamp(1 - distance / ((rect.height + viewport) * 0.48), 0, 1)
 }
 
 function sectionProgress(id: string) {
@@ -30,6 +33,15 @@ function sectionProgress(id: string) {
   if (!section) return 0
   const rect = section.getBoundingClientRect()
   return clamp((window.innerHeight - rect.top) / (window.innerHeight + rect.height), 0, 1)
+}
+
+function sectionFocus(id: string) {
+  const progress = sectionProgress(id)
+  return smooth(0.025, 0.18, progress) * (1 - smooth(0.74, 0.93, progress))
+}
+
+function shotProgress() {
+  return smooth(0.34, 0.66, sectionProgress('contact'))
 }
 
 function BallJourney() {
@@ -51,23 +63,30 @@ function BallJourney() {
         object.receiveShadow = true
       }
     })
+
     const group = new THREE.Group()
     group.add(clone)
-    group.scale.setScalar(1.35 / (Math.max(dimensions.x, dimensions.y, dimensions.z) || 1))
+    group.scale.setScalar(1.14 / (Math.max(dimensions.x, dimensions.y, dimensions.z) || 1))
     return group
   }, [scene])
 
-  const path = useMemo(
-    () => new THREE.CatmullRomCurve3([
-      new THREE.Vector3(2.45, -1.2, 0.25),
-      new THREE.Vector3(1.45, -1.38, 0.05),
-      new THREE.Vector3(-2.25, -1.28, -0.05),
-      new THREE.Vector3(2.2, -1.4, -0.28),
-      new THREE.Vector3(-1.75, -1.28, -0.2),
-      new THREE.Vector3(2.05, -1.42, -0.45),
-      new THREE.Vector3(-2.15, -1.3, -0.32),
-      new THREE.Vector3(1.55, -1.38, -0.15),
-    ], false, 'catmullrom', 0.62),
+  const dribblePath = useMemo(
+    () =>
+      new THREE.CatmullRomCurve3(
+        [
+          new THREE.Vector3(2.2, -1.18, 0.22),
+          new THREE.Vector3(1.35, -1.34, 0.05),
+          new THREE.Vector3(-1.95, -1.25, -0.04),
+          new THREE.Vector3(1.92, -1.36, -0.2),
+          new THREE.Vector3(-1.55, -1.25, -0.18),
+          new THREE.Vector3(1.82, -1.35, -0.34),
+          new THREE.Vector3(-1.8, -1.27, -0.26),
+          new THREE.Vector3(1.55, -1.32, -0.12),
+        ],
+        false,
+        'catmullrom',
+        0.6,
+      ),
     [],
   )
 
@@ -75,50 +94,132 @@ function BallJourney() {
     if (!ballRef.current || !shadowRef.current) return
 
     const progress = documentProgress()
+    const contact = sectionProgress('contact')
     const mobile = window.innerWidth < 760
-    const shot = smooth(0.865, 0.988, progress)
-    const pathProgress = clamp(progress / 0.875, 0, 1)
-    const target = path.getPoint(pathProgress)
+    const setup = smooth(0.06, 0.29, contact)
+    const shot = shotProgress()
+    const pathProgress = clamp(progress / 0.88, 0, 1)
+    const target = dribblePath.getPoint(pathProgress)
 
     if (mobile) target.x *= 0.48
-    target.y += Math.abs(Math.sin(pathProgress * Math.PI * 15)) * 0.2
+    target.y += Math.abs(Math.sin(pathProgress * Math.PI * 15)) * 0.16 * (1 - setup)
+
+    const shotStart = shotCurve.getPoint(0)
+    if (mobile) shotStart.x *= 0.48
+    target.lerp(shotStart, setup)
+
+    const charge = smooth(0.24, 0.34, contact) * (1 - smooth(0.34, 0.43, contact))
+    target.x += (mobile ? 0.16 : 0.36) * charge
+    target.y -= 0.08 * charge
+    target.z += 0.3 * charge
 
     if (shot > 0) {
-      target.x = THREE.MathUtils.lerp(target.x, 0, shot)
-      target.y = THREE.MathUtils.lerp(target.y, -0.48 + Math.sin(shot * Math.PI) * 1.05, shot)
-      target.z = THREE.MathUtils.lerp(target.z, -5.4, shot)
+      const easedShot = shot * shot * (3 - 2 * shot)
+      const shotTarget = shotCurve.getPoint(easedShot)
+      if (mobile) shotTarget.x *= 0.48
+
+      const netBounce = Math.sin(smooth(0.84, 1, shot) * Math.PI) * 0.13
+      shotTarget.z += netBounce
+      target.copy(shotTarget)
     }
 
     const scrollDelta = window.scrollY - lastScroll.current
     lastScroll.current = window.scrollY
-    spinVelocity.current = THREE.MathUtils.lerp(spinVelocity.current, scrollDelta * 0.024, 0.18)
+    spinVelocity.current = THREE.MathUtils.lerp(spinVelocity.current, scrollDelta * 0.022, 0.18)
 
     ballRef.current.position.lerp(target, 1 - Math.pow(0.0004, delta))
-    ballRef.current.rotation.x += spinVelocity.current + delta * 0.35
-    ballRef.current.rotation.z -= spinVelocity.current * 0.72 + delta * 0.22
+    ballRef.current.rotation.x += spinVelocity.current + delta * (shot > 0 ? 15 + shot * 16 : 0.38)
+    ballRef.current.rotation.z -= spinVelocity.current * 0.72 + delta * (shot > 0 ? 9 : 0.24)
 
-    const heroBoost = 1 + (1 - smooth(0, 0.12, progress)) * 0.18
-    const shotScale = THREE.MathUtils.lerp(heroBoost, 0.72, shot)
-    ballRef.current.scale.lerp(new THREE.Vector3(shotScale, shotScale, shotScale), 0.12)
+    const deviceScale = mobile ? 0.78 : 1
+    const heroBoost = 1 + (1 - smooth(0, 0.1, progress)) * 0.1
+    const depthScale = THREE.MathUtils.lerp(heroBoost, 0.68, shot)
+    const targetScale = depthScale * deviceScale
+    ballRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.12)
 
-    shadowRef.current.position.lerp(new THREE.Vector3(target.x, -1.58, target.z + 0.08), 0.16)
-    const shadowScale = clamp(1.15 - (target.y + 1.55) * 0.58, 0.45, 1.2)
+    shadowRef.current.position.lerp(new THREE.Vector3(target.x, -1.56, target.z + 0.08), 0.16)
+    const shadowScale = clamp(1.05 - (target.y + 1.5) * 0.6, 0.35, 1.05)
     shadowRef.current.scale.set(shadowScale, shadowScale, shadowScale)
-    const material = shadowRef.current.material as THREE.MeshBasicMaterial
-    material.opacity = THREE.MathUtils.lerp(material.opacity, shot > 0.7 ? 0 : 0.28, 0.12)
+    const shadowMaterial = shadowRef.current.material as THREE.MeshBasicMaterial
+    shadowMaterial.opacity = THREE.MathUtils.lerp(shadowMaterial.opacity, shot > 0.5 ? 0 : 0.25, 0.12)
   })
 
   return (
     <>
       <group ref={ballRef}>
         <primitive object={ball} />
-        <pointLight position={[0, 0.45, 0.8]} intensity={4.2} distance={3.2} color="#fff0ba" />
+        <pointLight position={[0, 0.42, 0.72]} intensity={4} distance={3} color="#fff0ba" />
       </group>
       <mesh ref={shadowRef} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[0.66, 48]} />
-        <meshBasicMaterial color="#000000" transparent opacity={0.28} depthWrite={false} />
+        <circleGeometry args={[0.6, 48]} />
+        <meshBasicMaterial color="#000000" transparent opacity={0.25} depthWrite={false} />
       </mesh>
     </>
+  )
+}
+
+function ShotTrail() {
+  const groupRef = useRef<THREE.Group>(null)
+  const primary = useMemo(() => {
+    const geometry = new THREE.BufferGeometry().setFromPoints(shotCurve.getPoints(96))
+    geometry.setDrawRange(0, 0)
+    const material = new THREE.LineBasicMaterial({
+      color: '#fff3c0',
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    })
+    return new THREE.Line(geometry, material)
+  }, [])
+
+  const accent = useMemo(() => {
+    const points = shotCurve.getPoints(96).map((point) => point.clone().add(new THREE.Vector3(0, -0.035, 0.02)))
+    const geometry = new THREE.BufferGeometry().setFromPoints(points)
+    geometry.setDrawRange(0, 0)
+    const material = new THREE.LineBasicMaterial({
+      color: '#edbb00',
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    })
+    return new THREE.Line(geometry, material)
+  }, [])
+
+  useEffect(
+    () => () => {
+      primary.geometry.dispose()
+      ;(primary.material as THREE.Material).dispose()
+      accent.geometry.dispose()
+      ;(accent.material as THREE.Material).dispose()
+    },
+    [accent, primary],
+  )
+
+  useFrame(() => {
+    const shot = shotProgress()
+    const visible = shot > 0.015 && shot < 0.995
+    const count = Math.max(0, Math.ceil(shot * 97))
+    const fade = smooth(0.02, 0.18, shot) * (1 - smooth(0.82, 1, shot))
+
+    primary.visible = visible
+    accent.visible = visible
+    primary.geometry.setDrawRange(0, count)
+    accent.geometry.setDrawRange(0, count)
+    ;(primary.material as THREE.LineBasicMaterial).opacity = fade * 0.8
+    ;(accent.material as THREE.LineBasicMaterial).opacity = fade * 0.56
+
+    if (groupRef.current) {
+      groupRef.current.scale.x = window.innerWidth < 760 ? 0.48 : 1
+    }
+  })
+
+  return (
+    <group ref={groupRef}>
+      <primitive object={primary} />
+      <primitive object={accent} />
+    </group>
   )
 }
 
@@ -128,41 +229,55 @@ type TrophyStageProps = {
   side: -1 | 1
   size: number
   accent: string
+  modelRotation?: [number, number, number]
 }
 
-function TrophyStage({ sectionId, url, side, size, accent }: TrophyStageProps) {
+function TrophyStage({ sectionId, url, side, size, accent, modelRotation = [0, 0, 0] }: TrophyStageProps) {
   const ref = useRef<THREE.Group>(null)
   const pedestal = useRef<THREE.Mesh>(null)
 
   useFrame((_, delta) => {
     if (!ref.current || !pedestal.current) return
-    const visibility = sectionVisibility(sectionId)
-    const progress = sectionProgress(sectionId)
-    const eased = smooth(0.04, 0.5, visibility)
 
-    ref.current.visible = visibility > 0.025
-    ref.current.position.x = THREE.MathUtils.lerp(side * 4.8, side * 2.3, eased)
-    ref.current.position.y = THREE.MathUtils.lerp(-1.45, -0.06 + Math.sin(progress * Math.PI) * 0.16, eased)
-    ref.current.position.z = THREE.MathUtils.lerp(-2.1, -0.25, eased)
-    ref.current.rotation.y += delta * 0.17 * side
-    ref.current.rotation.z = THREE.MathUtils.lerp(ref.current.rotation.z, side * (1 - eased) * 0.16, 0.08)
-    ref.current.scale.setScalar(eased * (0.9 + visibility * 0.24))
+    const focus = sectionFocus(sectionId)
+    const progress = sectionProgress(sectionId)
+    const eased = smooth(0.035, 0.88, focus)
+    const mobile = window.innerWidth < 760
+    const targetX = side * (mobile ? 0.88 : 2.62)
+    const deviceScale = mobile ? 0.68 : 1
+
+    ref.current.visible = focus > 0.012
+    ref.current.position.x = THREE.MathUtils.lerp(side * (mobile ? 2.2 : 4.4), targetX, eased)
+    ref.current.position.y = THREE.MathUtils.lerp(-1.25, -0.12 + Math.sin(progress * Math.PI) * 0.08, eased)
+    ref.current.position.z = THREE.MathUtils.lerp(-2.8, -0.48, eased)
+    ref.current.rotation.y = Math.sin(progress * Math.PI * 2) * 0.055 * side
+    ref.current.rotation.z = THREE.MathUtils.lerp(ref.current.rotation.z, side * (1 - eased) * 0.08, 0.08)
+
+    const targetScale = eased * deviceScale
+    ref.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 1 - Math.pow(0.001, delta))
 
     const pedestalMaterial = pedestal.current.material as THREE.MeshBasicMaterial
-    pedestalMaterial.opacity = eased * 0.38
+    pedestalMaterial.opacity = eased * 0.32
   })
 
   return (
     <group ref={ref}>
-      <Float speed={1.1} rotationIntensity={0.08} floatIntensity={0.28}>
-        <NormalizedModel url={url} size={size} />
+      <Float speed={0.62} rotationIntensity={0.015} floatIntensity={0.12}>
+        <NormalizedModel url={url} size={size} rotation={modelRotation} />
       </Float>
-      <mesh ref={pedestal} position={[0, -1.66, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[0.7, 1.72, 64]} />
+      <mesh ref={pedestal} position={[0, -size * 0.53, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[size * 0.21, size * 0.5, 64]} />
         <meshBasicMaterial color={accent} transparent opacity={0.3} side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
-      <pointLight position={[0, 1.6, 1.4]} intensity={22} distance={6} color={accent} />
-      <spotLight position={[side * -2.2, 4.5, 2]} target-position={[0, 0, 0]} angle={0.42} penumbra={0.9} intensity={72} color={accent} />
+      <pointLight position={[0, size * 0.48, 1.25]} intensity={18} distance={5.5} color={accent} />
+      <spotLight
+        position={[side * -2.1, 4.2, 2]}
+        target-position={[0, 0, 0]}
+        angle={0.4}
+        penumbra={0.92}
+        intensity={58}
+        color={accent}
+      />
     </group>
   )
 }
@@ -170,9 +285,101 @@ function TrophyStage({ sectionId, url, side, size, accent }: TrophyStageProps) {
 function TrophyMoments() {
   return (
     <>
-      <TrophyStage sectionId="experience" url="/models/champions-league.glb" side={1} size={4.25} accent="#dce9ff" />
-      <TrophyStage sectionId="projects" url="/models/world-cup-trophy.glb" side={-1} size={3.8} accent="#edbb00" />
+      <TrophyStage
+        sectionId="experience"
+        url="/models/champions-league.glb"
+        side={1}
+        size={2.72}
+        accent="#dce9ff"
+        modelRotation={[0, Math.PI, 0]}
+      />
+      <TrophyStage
+        sectionId="projects"
+        url="/models/world-cup-trophy.glb"
+        side={-1}
+        size={2.48}
+        accent="#edbb00"
+        modelRotation={[0, -0.2, 0]}
+      />
     </>
+  )
+}
+
+function GoalImpact() {
+  const ringRef = useRef<THREE.Mesh>(null)
+  const innerRingRef = useRef<THREE.Mesh>(null)
+  const burstRef = useRef<THREE.Group>(null)
+  const flashRef = useRef<THREE.PointLight>(null)
+
+  useFrame(() => {
+    if (!ringRef.current || !innerRingRef.current || !burstRef.current || !flashRef.current) return
+
+    const shot = shotProgress()
+    const hit = smooth(0.8, 0.89, shot)
+    const decay = 1 - smooth(0.89, 1, shot)
+    const energy = hit * decay
+
+    ringRef.current.visible = energy > 0.002
+    innerRingRef.current.visible = energy > 0.002
+    burstRef.current.visible = energy > 0.002
+
+    ringRef.current.scale.setScalar(0.35 + hit * 3.8)
+    innerRingRef.current.scale.setScalar(0.2 + hit * 2.35)
+    burstRef.current.scale.setScalar(0.3 + hit * 2.1)
+    burstRef.current.rotation.z = hit * 0.72
+
+    ;(ringRef.current.material as THREE.MeshBasicMaterial).opacity = energy * 0.72
+    ;(innerRingRef.current.material as THREE.MeshBasicMaterial).opacity = energy * 0.86
+    burstRef.current.children.forEach((child) => {
+      const ray = child.children[0] as THREE.Mesh
+      ;(ray.material as THREE.MeshBasicMaterial).opacity = energy * 0.68
+    })
+    flashRef.current.intensity = energy * 95
+  })
+
+  return (
+    <group position={[0, -0.48, -4.94]}>
+      <mesh ref={ringRef}>
+        <ringGeometry args={[0.18, 0.24, 64]} />
+        <meshBasicMaterial
+          color="#fff4c9"
+          transparent
+          opacity={0}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+      <mesh ref={innerRingRef}>
+        <ringGeometry args={[0.1, 0.15, 64]} />
+        <meshBasicMaterial
+          color="#edbb00"
+          transparent
+          opacity={0}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+      <group ref={burstRef}>
+        {Array.from({ length: 12 }, (_, index) => (
+          <group key={index} rotation={[0, 0, (index / 12) * Math.PI * 2]}>
+            <mesh position={[0, 0.58, 0]}>
+              <planeGeometry args={[0.028, 0.72]} />
+              <meshBasicMaterial
+                color={index % 2 === 0 ? '#fff4c9' : '#edbb00'}
+                transparent
+                opacity={0}
+                blending={THREE.AdditiveBlending}
+                depthWrite={false}
+                side={THREE.DoubleSide}
+              />
+            </mesh>
+          </group>
+        ))}
+      </group>
+      <pointLight ref={flashRef} color="#fff4c9" intensity={0} distance={5.5} />
+    </group>
   )
 }
 
@@ -181,19 +388,28 @@ function FinalGoal() {
 
   useFrame(() => {
     if (!ref.current) return
-    const visibility = sectionVisibility('contact')
+
     const progress = sectionProgress('contact')
-    const appear = smooth(0.02, 0.68, visibility)
-    ref.current.visible = appear > 0.02
-    ref.current.position.z = THREE.MathUtils.lerp(-9.5, -4.7, appear)
-    ref.current.position.y = THREE.MathUtils.lerp(-1.45, -0.86, appear)
-    ref.current.scale.setScalar(appear * (0.92 + progress * 0.08))
+    const appear = smooth(0.035, 0.32, progress)
+    const shot = shotProgress()
+    const impact = smooth(0.76, 0.85, shot) * (1 - smooth(0.85, 1, shot))
+    const shake = Math.sin(shot * 118) * impact
+
+    ref.current.visible = appear > 0.015
+    ref.current.position.x = shake * 0.075
+    ref.current.position.y = THREE.MathUtils.lerp(-1.35, -0.82, appear) + Math.abs(shake) * 0.025
+    ref.current.position.z = THREE.MathUtils.lerp(-8.8, -4.78, appear)
+    ref.current.rotation.y = Math.PI
+    ref.current.rotation.z = shake * 0.022
+
+    const targetScale = appear * 0.92
+    ref.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.12)
   })
 
   return (
-    <group ref={ref} position={[0, -0.86, -7.5]} rotation={[0, Math.PI, 0]}>
-      <NormalizedModel url="/models/football-goal.glb" size={7.8} />
-      <spotLight position={[0, 5, 3]} angle={0.58} penumbra={0.88} intensity={62} color="#dce9ff" />
+    <group ref={ref} position={[0, -0.82, -7.5]} rotation={[0, Math.PI, 0]}>
+      <NormalizedModel url="/models/football-goal.glb" size={6.65} />
+      <spotLight position={[0, 5, 3]} angle={0.56} penumbra={0.9} intensity={56} color="#dce9ff" />
     </group>
   )
 }
@@ -203,9 +419,9 @@ function ResponsiveCamera() {
 
   useEffect(() => {
     const update = () => {
-      camera.position.z = window.innerWidth < 760 ? 8.5 : 7.35
+      camera.position.z = window.innerWidth < 760 ? 8.65 : 7.55
       const perspectiveCamera = camera as THREE.PerspectiveCamera
-      perspectiveCamera.fov = window.innerWidth < 760 ? 48 : 41
+      perspectiveCamera.fov = window.innerWidth < 760 ? 49 : 42
       perspectiveCamera.updateProjectionMatrix()
     }
 
@@ -221,16 +437,18 @@ function SceneContent() {
   return (
     <>
       <ResponsiveCamera />
-      <ambientLight intensity={0.82} color="#9eb7e8" />
-      <hemisphereLight intensity={1.25} color="#f7f1df" groundColor="#071328" />
-      <directionalLight position={[4, 7, 5]} intensity={5.4} color="#fff1c2" />
-      <spotLight position={[-5, 6, 4]} angle={0.38} penumbra={0.82} intensity={82} color="#edbb00" />
-      <spotLight position={[5, 4, 2]} angle={0.42} penumbra={0.9} intensity={66} color="#a50044" />
-      <Sparkles count={46} scale={[11, 7, 8]} size={1.25} speed={0.18} color="#edbb00" opacity={0.34} />
+      <ambientLight intensity={0.78} color="#9eb7e8" />
+      <hemisphereLight intensity={1.1} color="#f7f1df" groundColor="#071328" />
+      <directionalLight position={[4, 7, 5]} intensity={4.8} color="#fff1c2" />
+      <spotLight position={[-5, 6, 4]} angle={0.38} penumbra={0.82} intensity={74} color="#edbb00" />
+      <spotLight position={[5, 4, 2]} angle={0.42} penumbra={0.9} intensity={58} color="#a50044" />
+      <Sparkles count={38} scale={[11, 7, 8]} size={1.15} speed={0.16} color="#edbb00" opacity={0.28} />
+      <ShotTrail />
       <BallJourney />
       <TrophyMoments />
       <FinalGoal />
-      <Environment preset="city" environmentIntensity={0.58} />
+      <GoalImpact />
+      <Environment preset="city" environmentIntensity={0.5} />
     </>
   )
 }
@@ -239,11 +457,13 @@ export function FootballScene() {
   return (
     <div className="scene" aria-hidden="true">
       <Canvas
-        camera={{ position: [0, 0, 7.35], fov: 41 }}
-        dpr={[1, 1.7]}
+        camera={{ position: [0, 0, 7.55], fov: 42 }}
+        dpr={[1, 1.65]}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       >
-        <Suspense fallback={null}><SceneContent /></Suspense>
+        <Suspense fallback={null}>
+          <SceneContent />
+        </Suspense>
       </Canvas>
     </div>
   )
