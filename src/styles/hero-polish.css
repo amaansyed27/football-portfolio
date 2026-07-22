@@ -1,0 +1,96 @@
+/* Hero layout polish: tighter vertical rhythm and a shared left alignment. */
+.hero {
+  min-height: 100svh;
+  align-items: flex-start;
+  padding: 0 clamp(1.5rem, 3vw, 3rem) 2rem;
+}
+
+.hero__content {
+  width: min(100%, 1200px);
+  padding-top: clamp(7rem, 14vh, 8.25rem);
+}
+
+.hero__kicker {
+  margin: 0 0 clamp(.9rem, 1.8vh, 1.2rem);
+}
+
+.hero h1 {
+  font-size: clamp(5.8rem, 14.4vw, 14rem);
+  line-height: .67;
+}
+
+.hero__role {
+  margin-top: clamp(1rem, 2vh, 1.35rem);
+}
+
+.hero__actions {
+  margin-top: clamp(1rem, 2vh, 1.35rem);
+  gap: 1.65rem;
+}
+
+.hero__actions .button,
+.hero__actions .text-link {
+  min-height: 52px;
+}
+
+.hero__actions .text-link {
+  padding: 0 .15rem;
+}
+
+.hero__score,
+.hero__scroll {
+  right: clamp(1.5rem, 3vw, 3rem);
+}
+
+.hero__scroll {
+  bottom: 1.75rem;
+}
+
+@media (max-height: 820px) and (min-width: 761px) {
+  .hero__content {
+    padding-top: 6.7rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(5.6rem, 13.8vw, 13.2rem);
+  }
+
+  .hero__role,
+  .hero__actions {
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 760px) {
+  .hero {
+    min-height: 100svh;
+    padding: 0 1.25rem 2.25rem;
+  }
+
+  .hero__content {
+    width: 100%;
+    padding-top: 6.5rem;
+  }
+
+  .hero__kicker {
+    margin-bottom: .9rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(4.9rem, 22vw, 8rem);
+    line-height: .69;
+  }
+
+  .hero__role,
+  .hero__actions {
+    margin-top: 1rem;
+  }
+
+  .hero__actions {
+    gap: .35rem;
+  }
+
+  .hero__scroll {
+    display: none;
+  }
+}
