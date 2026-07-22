@@ -141,27 +141,60 @@ function App() {
         </section>
 
         <section className="contact section" id="contact">
-          <div className="contact__lights" />
-          <div className="contact__shot-cue" aria-hidden="true">
-            <span>FINAL ATTACK</span>
-            <strong>Scroll to take the shot</strong>
-            <i />
-          </div>
-          <div className="goal-callout" aria-hidden="true">
-            <div className="goal-callout__panel">
-              <span>90+4&apos;</span>
-              <strong>GOOOAL!</strong>
-              <small>Top bins · Final whistle</small>
+          <div className="finale__wash" aria-hidden="true" />
+          <div className="finale__sticky">
+            <div className="finale__top">
+              <div>
+                <SectionLabel number="90+">Final attack</SectionLabel>
+                <p className="finale__eyebrow">ONE LAST MOVE</p>
+                <h2 className="finale__headline">PLAY IT<br /><em>FORWARD.</em></h2>
+              </div>
+              <p className="finale__lede">
+                The ball waits on the left. One final scroll sends it across the pitch and into the far corner.
+              </p>
             </div>
-          </div>
-          <div className="section__inner contact__content">
-            <SectionLabel number="90+">Final attack</SectionLabel>
-            <p className="contact__overline">THE NET IS OPEN</p>
-            <h2>READY FOR THE<br /><em>NEXT FIXTURE?</em></h2>
-            <a className="button button--gold button--large" href={profile.linkedin} target="_blank" rel="noreferrer">Start a conversation <ArrowUpRight /></a>
-            <footer>
-              <div><img src="/assets/fc-barcelona.svg" alt="" /><strong>DIVYANSHU MITTAL</strong></div>
-              <p>Full-stack developer · Delhi, India</p>
+
+            <div className="finale__play" aria-hidden="true">
+              <div className="finale__pitch">
+                <span className="finale__halfway" />
+                <span className="finale__centre-circle" />
+                <span className="finale__runway" />
+              </div>
+              <div className="finale__launch">
+                <span>FINAL TOUCH</span>
+                <strong>Scroll to strike</strong>
+                <i />
+              </div>
+              <div className="finale__goal">
+                <span className="finale__goal-frame" />
+                <span className="finale__goal-depth" />
+                <small>FAR CORNER</small>
+              </div>
+              <div className="finale__impact">
+                <span /><span /><span />
+              </div>
+              <div className="finale__goal-word">
+                <span>90+4&apos;</span>
+                <strong>GOAL</strong>
+              </div>
+            </div>
+
+            <div className="finale__cta-row">
+              <div>
+                <span>FULL-TIME IS ONLY THE START</span>
+                <p>Open to building ambitious products, useful systems and the next memorable release.</p>
+              </div>
+              <a className="button button--gold finale__cta" href={profile.linkedin} target="_blank" rel="noreferrer">
+                Start a conversation <ArrowUpRight />
+              </a>
+            </div>
+
+            <footer className="finale__footer">
+              <div className="finale__identity">
+                <img src="/assets/fc-barcelona.svg" alt="" />
+                <div><strong>DIVYANSHU MITTAL</strong><small>FULL-STACK DEVELOPER · DELHI, INDIA</small></div>
+              </div>
+              <p>React · Next.js · Node.js · TypeScript</p>
               <a href="#home">Back to kick-off ↑</a>
             </footer>
           </div>
