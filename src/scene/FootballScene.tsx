@@ -36,7 +36,7 @@ function sectionFocus(id: string) {
 }
 
 function shotProgress() {
-  return smooth(0.5, 0.87, stickySectionProgress('contact'))
+  return smooth(0.78, 0.96, stickySectionProgress('contact'))
 }
 
 function createFooterShotCurve(width: number) {
@@ -109,7 +109,7 @@ function BallJourney() {
     const progress = documentProgress()
     const finale = stickySectionProgress('contact')
     const mobile = window.innerWidth < 760
-    const setup = smooth(0.02, 0.34, finale)
+    const setup = smooth(0.58, 0.74, finale)
     const shot = shotProgress()
     const pathProgress = clamp(progress / 0.88, 0, 1)
     const target = dribblePath.getPoint(pathProgress)
@@ -120,7 +120,7 @@ function BallJourney() {
     const shotStart = footerShotCurve.getPoint(0)
     target.lerp(shotStart, setup)
 
-    const charge = smooth(0.4, 0.5, finale) * (1 - shot)
+    const charge = smooth(0.72, 0.78, finale) * (1 - shot)
     target.x -= viewport.width * 0.018 * charge
     target.y -= 0.08 * charge
 
