@@ -18,6 +18,8 @@ npm run dev
 
 Create a production build with `npm run build`.
 
+The same production build is checked automatically by GitHub Actions on pushes and pull requests.
+
 ## Asset note
 
 The supplied GLB assets are used as narrative elements. The World Cup model was geometry-optimised for web delivery while preserving the original source outside the repository.
