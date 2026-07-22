@@ -9,8 +9,9 @@
   display: grid;
   place-items: center;
   perspective: 1300px;
-  opacity: 0;
+  opacity: .78;
   pointer-events: none;
+  transition: opacity .14s linear;
 }
 
 .hero-ten__stage,
@@ -20,6 +21,21 @@
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
+}
+
+.hero-ten__stage {
+  --ten-scroll-x: 0px;
+  --ten-scroll-y: 0px;
+  --ten-scroll-rotate-x: 0deg;
+  --ten-scroll-rotate-y: 0deg;
+  --ten-scroll-scale: 1;
+  transform:
+    translate3d(var(--ten-scroll-x), var(--ten-scroll-y), 0)
+    rotateX(var(--ten-scroll-rotate-x))
+    rotateY(var(--ten-scroll-rotate-y))
+    scale(var(--ten-scroll-scale));
+  transform-origin: center;
+  will-change: transform;
 }
 
 .hero-ten__rig {
@@ -199,7 +215,7 @@
   .hero-ten {
     right: 1.5rem;
     width: 46vw;
-    opacity: .78;
+    opacity: .62;
   }
 
   .hero-ten__plate {
@@ -242,11 +258,13 @@
     opacity: .55;
   }
 
+  .hero-ten__stage,
   .hero-ten__rig,
   .hero-ten__stack,
   .hero-ten__glint,
   .hero-ten__orbit {
     animation: none !important;
     transition: none !important;
+    transform: none !important;
   }
 }
