@@ -161,7 +161,7 @@ export function usePortfolioMotion(enabled: boolean) {
       )
 
       gsap.fromTo(
-        '.finale__top > *, .finale__play',
+        '.finale__top > *',
         { opacity: 0, y: 90 },
         {
           opacity: 1,
@@ -173,31 +173,22 @@ export function usePortfolioMotion(enabled: boolean) {
       )
 
       gsap.fromTo(
-        '.finale__goal',
-        { opacity: 0, x: 90, scale: 0.86 },
+        '.finale__cta-row, .finale__footer',
+        { opacity: 0, y: 58 },
         {
           opacity: 1,
-          x: 0,
-          scale: 1,
+          y: 0,
+          stagger: 0.12,
           ease: 'none',
-          scrollTrigger: { trigger: '.contact', start: 'top 72%', end: 'top 8%', scrub: 1 },
+          scrollTrigger: { trigger: '.contact', start: 'top 72%', end: 'top 4%', scrub: 1 },
         },
       )
 
-      gsap.fromTo(
-        '.finale__launch',
-        { opacity: 0, x: -60 },
-        {
-          opacity: 1,
-          x: 0,
-          ease: 'none',
-          scrollTrigger: { trigger: '.contact', start: 'top 72%', end: 'top 8%', scrub: 1 },
-        },
-      )
-
+      gsap.set('.finale__play', { opacity: 0, y: 70 })
+      gsap.set('.finale__goal', { opacity: 0, x: 90, scale: 0.86 })
+      gsap.set('.finale__launch', { opacity: 0, x: -60 })
       gsap.set('.finale__impact span', { opacity: 0, scale: 0.25 })
       gsap.set('.finale__goal-word', { opacity: 0, scale: 0.62, clipPath: 'inset(0 46% 0 46%)' })
-      gsap.set('.finale__cta-row, .finale__footer', { opacity: 0, y: 58 })
 
       const shotTimeline = gsap.timeline({
         scrollTrigger: {
@@ -210,25 +201,28 @@ export function usePortfolioMotion(enabled: boolean) {
       })
 
       shotTimeline
-        .to('.finale__launch', { opacity: 0, x: -45, duration: 0.12 }, 0.47)
-        .to('.finale__goal', { x: -9, rotate: -1.3, duration: 0.035 }, 0.78)
-        .to('.finale__goal', { x: 7, rotate: 1, duration: 0.035 }, 0.815)
-        .to('.finale__goal', { x: 0, rotate: 0, duration: 0.08 }, 0.85)
+        .to('.finale__top, .finale__cta-row, .finale__footer', { opacity: 0, y: -30, duration: 0.08 }, 0.56)
+        .to('.finale__play', { opacity: 1, y: 0, duration: 0.08, ease: 'power2.out' }, 0.62)
+        .to('.finale__goal', { opacity: 1, x: 0, scale: 1, duration: 0.08, ease: 'power2.out' }, 0.64)
+        .to('.finale__launch', { opacity: 1, x: 0, duration: 0.08, ease: 'power2.out' }, 0.64)
+        .to('.finale__launch', { opacity: 0, x: -45, duration: 0.05 }, 0.76)
+        .to('.finale__goal', { x: -9, rotate: -1.3, duration: 0.025 }, 0.9)
+        .to('.finale__goal', { x: 7, rotate: 1, duration: 0.025 }, 0.925)
+        .to('.finale__goal', { x: 0, rotate: 0, duration: 0.05 }, 0.95)
         .to(
           '.finale__impact span',
-          { opacity: 0.9, scale: 1.6, stagger: 0.025, duration: 0.1, ease: 'power2.out' },
-          0.78,
+          { opacity: 0.9, scale: 1.6, stagger: 0.018, duration: 0.06, ease: 'power2.out' },
+          0.9,
         )
-        .to('.finale__impact span', { opacity: 0, scale: 3.2, stagger: 0.02, duration: 0.18 }, 0.86)
+        .to('.finale__impact span', { opacity: 0, scale: 3.2, stagger: 0.012, duration: 0.05 }, 0.95)
         .to(
           '.finale__goal-word',
-          { opacity: 1, scale: 1, clipPath: 'inset(0 0% 0 0%)', duration: 0.18, ease: 'power3.out' },
-          0.81,
+          { opacity: 1, scale: 1, clipPath: 'inset(0 0% 0 0%)', duration: 0.06, ease: 'power3.out' },
+          0.92,
         )
-        .to('.finale__goal-word', { opacity: 0.16, yPercent: -18, duration: 0.22 }, 0.99)
-        .to('.finale__wash', { opacity: 1, filter: 'brightness(1.9) saturate(1.35)', duration: 0.06 }, 0.78)
-        .to('.finale__wash', { opacity: 0.54, filter: 'brightness(1) saturate(1)', duration: 0.2 }, 0.84)
-        .to('.finale__cta-row, .finale__footer', { opacity: 1, y: 0, stagger: 0.08, duration: 0.2 }, 0.82)
+        .to('.finale__wash', { opacity: 1, filter: 'brightness(1.9) saturate(1.35)', duration: 0.04 }, 0.9)
+        .to('.finale__wash', { opacity: 0.54, filter: 'brightness(1) saturate(1)', duration: 0.05 }, 0.95)
+        .to('.finale__goal-word', { opacity: 1, duration: 0.02 }, 0.98)
 
       gsap.to('.marquee span', {
         xPercent: -28,

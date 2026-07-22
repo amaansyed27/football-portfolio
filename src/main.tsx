@@ -5,6 +5,7 @@ import './styles/global.css'
 import './styles/rebuild.css'
 import './styles/finale.css'
 import './styles/hero-polish.css'
+import './styles/finale-ending.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
