@@ -1,0 +1,97 @@
+/* The football strike is a full-screen final beat, not a mid-footer decoration. */
+
+.finale__top {
+  grid-row: 1;
+}
+
+.finale__cta-row {
+  grid-row: 3;
+}
+
+.finale__footer {
+  grid-row: 4;
+}
+
+.finale__play {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  min-height: 0;
+  margin: 0;
+  opacity: 0;
+  transform: translateY(70px);
+  pointer-events: none;
+}
+
+.finale__pitch {
+  inset: 13% 5vw 9%;
+}
+
+.finale__launch {
+  left: 5vw;
+  bottom: 16%;
+}
+
+.finale__goal {
+  right: 5vw;
+  bottom: 11%;
+}
+
+.finale__impact {
+  right: 12.5%;
+  bottom: 27%;
+}
+
+.finale__goal-word {
+  right: 20%;
+  top: 9%;
+}
+
+@media (max-width: 900px) {
+  .finale__pitch {
+    inset: 14% 1.25rem 10%;
+  }
+
+  .finale__launch {
+    left: 1.25rem;
+    bottom: 15%;
+  }
+
+  .finale__goal {
+    right: 1.25rem;
+    bottom: 10%;
+  }
+
+  .finale__impact {
+    right: 14%;
+    bottom: 25%;
+  }
+}
+
+@media (max-width: 680px) {
+  .finale__pitch {
+    inset: 16% 1rem 12%;
+  }
+
+  .finale__launch {
+    left: 1rem;
+    bottom: 18%;
+  }
+
+  .finale__goal {
+    right: 1rem;
+    bottom: 13%;
+  }
+
+  .finale__goal-word {
+    right: 1rem;
+    top: 13%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .finale__play {
+    opacity: 1;
+    transform: none;
+  }
+}
