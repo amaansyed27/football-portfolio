@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/components/introsequence.tsx","./src/components/navigation.tsx","./src/components/sectionlabel.tsx","./src/data/profile.ts","./src/hooks/useportfoliomotion.ts","./src/hooks/usesmoothscroll.ts","./src/scene/footballscene.tsx","./src/scene/normalizedmodel.tsx"],"version":"5.9.3"}
